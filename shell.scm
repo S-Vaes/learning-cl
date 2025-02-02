@@ -1,4 +1,5 @@
 (use-modules (guix packages)
+             (my-channel papyrus)
              (gnu packages lisp)
              (gnu packages lisp-xyz))
 
@@ -10,6 +11,8 @@
   (inputs
    (list sbcl
          cl-asdf
+         sbcl-named-readtables
+         sbcl-papyrus
          sbcl-iterate
          sbcl-alexandria))
   (native-inputs

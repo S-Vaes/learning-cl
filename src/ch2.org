@@ -1,0 +1,142 @@
+#+TITLE: Chapter 2: Lists
+
+* List length
+
+#+begin_src lisp
+(length '(a b c d))
+(length ())
+#+end_src
+
+* Equality
+
+Two lists are equal if their elements are equal.
+
+#+begin_src lisp
+(first '(a b c d))
+(second '(a b c d))
+(rest '(a b c d))
+(rest (rest '(a b c d)))
+
+(defun my-second (list)
+  (first (rest list)))
+
+(defun my-third (list)
+  (first (rest (rest list))))
+
+(my-second '(a b c d))
+(my-third '(a b c d))
+(my-second '(honk if you like geese))
+#+end_src
+
+* CAR and CDR
+
+#+begin_src lisp
+(car '(a b c d))
+(cdr '(a b c d))
+#+end_src
+
+#+begin_src lisp
+(car (cdr '(fee fie foe fum)))
+
+
+(cadr '(fee fie foe fum))
+(cdar '((fee fie) (foe fum)))
+
+(caddr '(fee fie foe fum))
+(cadddr '(fee fie foe fum faa fabr fbbr))
+
+(cadar '((blue cube) (red pyramid)))
+
+(cddr '((a b) (c d) (e f)))
+(cadr '((a b) (c d) (e f)))
+(cdar '((a b) (c d) (e f)))
+(cadar '((a b) (c d) (e f)))
+(cddar '((a b) (c d) (e f)))
+(caar '((a b) (c d) (e f)))
+(cdaddr '((a b) (c d) (e f)))
+(cdaddr '((a b) (c d) (e f)))
+
+
+(car '(bills))
+#+end_src
+
+#+begin_src lisp
+(cons 'a '(b c d))
+(cons 'sink '(or swim))
+
+(defun greet (msg)
+  (cons 'hello msg))
+
+(greet '(mr sil))
+
+(cons 'foo (cons 'bar (cons 'baz nil)))
+
+(defun my-make-list (list1 list2)
+  (cons list1 list2))
+
+(my-make-list '(hello sil) '(how are you))
+
+(list 'foo 'bar 'baz)
+
+(list '(foo))
+
+(defun blurt (in1 in2)
+  (list in1 'is 'a in2))
+
+(blurt 'mike 'nerd)
+
+(cons nil nil)
+(list nil nil)
+
+(defun say-what (in)
+  (cons 'what (rest in)))
+
+(say-what '(take a nap))
+
+(defun ex12 (in1 in2 in3 in4)
+  (list (cons in1 in2) (cons in3 in4)))
+
+(ex12 'a 'b 'c 'd)
+
+(defun duo-cons (in1 in2 list1)
+  (cons in1 (cons in2 list1)))
+
+(duo-cons 'a 'b '(a b c d))
+
+(defun two-deeper (in)
+  (list (list in)))
+
+(two-deeper 'moo)
+
+(caaadr '(((good)) ((night))))
+
+(listp '(a list))
+(listp 'atom)
+
+(consp nil)
+(consp '(a list))
+
+(atom 'atom)
+(atom '(a list))
+
+(defun unary-add-1 (in)
+  (cons 'x in))
+
+(unary-add-1 '(x x x))
+(cddr '(x x x x x x))
+
+(defun unary-zerop (in)
+  (equal (length in) 0))
+
+(unary-zerop '(x x x x))
+(unary-zerop nil)
+
+(defun unary-greaterp (in1 in2)
+  (> (length in1) (length in2)))
+
+(unary-greaterp '(x x x) '(x x x x))
+
+(cons 'a (cons 'b (cons 'c 'd)))
+
+(list (cons 'a 'b) (cons 'c 'd))
+#+end_src

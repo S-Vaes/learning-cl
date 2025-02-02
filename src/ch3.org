@@ -1,0 +1,43 @@
+#+TITLE: Eval notation
+
+#+begin_src lisp
+(+ 2 3)
+
+(eval '(+ 2 3))
+
+(oddp (+ 1 6))
+
+(* 3 (+ 1 6))
+
+(defun my-avg (a b )
+  (/ (+ a b) 2.0))
+
+(my-avg 1 2)
+
+(defun my-sqr (n)
+  (* n n))
+(my-sqr 2)
+
+(defun pythag (a b)
+  (sqrt (+ (* a a) (* b b))))
+(pythag 3 4)
+
+(equal 'kirk 'spock)
+
+(+ (length '(1 foo 2 moo))
+   (third '(1 foo 2 moo)))
+
+(defun addln (list1)
+  (cons (length list1) list1))
+(addln '(this is a list))
+
+((lambda (x) (+ 3 x)) 3)
+
+((lambda (x) (* x 2)) 3)
+((lambda (x) (* x x)) 3)
+((lambda (x y) (equal (+ x 1) y)) 6 7)
+
+;;  #’ is the proper way to quote functions supplied as inputs to other functions
+(apply #'+ '(2 3))
+(apply #'cons '(as (you like it)))
+#+end_src
