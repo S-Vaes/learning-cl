@@ -1,1 +1,36 @@
 #+TITLE: Chapter 4: conditionals
+
+#+begin_src lisp
+(if (oddp 1) 'odd 'even)
+(if (oddp 2) 'odd 'even)
+
+(defun my-abs (x)
+  (if (< x 0) (- x) x))
+
+(my-abs -2)
+(my-abs 2)
+
+(defun symbol-test (x)
+  (if (symbolp x) (list 'yes x 'is 'a 'symbol)
+      (list 'no x 'is 'not 'a 'symbol)))
+
+(symbol-test 'rutabaga)
+
+(defun make-even (x)
+  (if (oddp x) (+ x 1)
+      x))
+(make-even 2)
+
+(defun further (x)
+  (if (< x 0) (- x 1)
+      (+ x 1)))
+(further 1)
+
+(defun my-not (x)
+  (if x nil t))
+(my-not nil)
+
+(defun ordered (x y)
+  (if (< x y) (list x y) (list y x)))
+(ordered 3 2)
+#+end_src
