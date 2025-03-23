@@ -1,0 +1,153 @@
+#+TITLE: Applicative Programming
+
+#+begin_src lisp
+(funcall #'cons 'a 'b)
+
+(setf fn #'cons)
+
+fn
+
+(type-of fn)
+
+(funcall fn 'c 'd)
+
+(defun square (n) (* n n))
+(square 3)
+
+(mapcar #'square '(1 2 3 4 5))
+
+(setf words
+      '((one un)
+        (two deux)
+        (three trois)
+        (four quatre)
+        (five cinq)))
+
+(mapcar #'first words)
+(mapcar #'second words)
+(mapcar #'reverse words)
+
+(defun translate (x)
+  (second (assoc x words)))
+(mapcar #'translate '(three one four one five))
+
+(defun add1 (x)
+  (+ x 1))
+(add1 2)
+(mapcar #'add1 '(13 5 7 9))
+
+(setf daily-planet
+      '((olsen jimmy 1 cub-reporter)
+        (kent clark 2 reporter)
+        (lane lois 3 reporter)
+        (white perry 4 editor)))
+(mapcar #'third daily-planet)
+
+(mapcar #'zerop '(2 0 3 4 0 -5 -6))
+(defun greater-than-5-p (x)
+  (> x 5))
+(mapcar #'greater-than-5-p '(2 0 3 4 0 -5 -6))
+
+(mapcar #'(lambda (n) (* n n)) '(1 2 3 4 5))
+(mapcar #'(lambda (n) (* n 10)) '(1 2 3 4 5))
+
+(mapcar #'(lambda (x) (list 'hi 'there x))
+        '(joe fred wanda))
+(defun niller (x) (lambda (x) (cond ((equal x t) t)
+                                    ((nilp x) t)
+                                    (t nil)))
+  x)
+(niller nil)
+
+(defun flipper (xs)
+  (mapcar #'(lambda (x) (cond ((equal x 'up) 'down)
+                              ((equal x 'down) 'up)))
+          xs))
+(flipper '(up down up down))
+
+(find-if #'oddp '(2 4 5 6 7 8))
+
+(defun my-assoc (key table)
+  (find-if #'(lambda (entry)
+               (equal key (first entry)))
+           table))
+
+(my-assoc 'two words)
+
+(defun between (x k)
+  (find-if #'(lambda (num)
+               (and (> k (- num 10))
+                    (< k (+ num 10))))
+           x))
+(between '(110 130 150) 115)
+
+(defun find-nested (xs)
+  (find-if #'(lambda (elem) (not (listp elem))) xs))
+
+(find-nested '('(1 2) 22 '(3 4) 5))
+
+(setf note-table
+      '((c 1)
+        (c-sharp 2)
+        (d 3)
+        (d-sharp 4)
+        (e 5)
+        (f 6)
+        (f-sharp 7)
+        (g 8)
+        (g-sharp 9)
+        (a 10)
+        (a-sharp 11)
+        (b 12)))
+
+(defun numbers (xs)
+  (mapcar #'(lambda (x) (second (assoc x note-table))) xs))
+(numbers '(e d c e e e e))
+
+(defun find-note-by-num (num)
+  (first (find-if #'(lambda (elem) (equal (second elem) num)) note-table)))
+(find-note-by-num 13)
+(defun notes (xs)
+  (mapcar #'find-note-by-num xs))
+(notes '(1 3 5))
+
+(notes (numbers '(c d e f g a)))
+
+(defun raise (num xs)
+  (mapcar #'(lambda (elem) (+ elem num)) xs))
+(raise 5 '(5 3 1 3 5 5 11))
+
+(defun normalize (xs)
+  (mapcar #'(lambda (elem) (mod elem 12)) xs))
+(normalize '(6 10 13))
+
+(defun transpose (step xs)
+  (notes (normalize (raise step (numbers xs)))))
+(transpose -1 '(e d c d e e e))
+
+(defun get-between-one-and-five (xs)
+  (remove-if-not #'(lambda (elem) (and (> elem 1) (< elem 5))) xs))
+(get-between-one-and-five '(1 0 6 1 2 31 4 3))
+
+(defun count-the (xs)
+  (length (remove-if-not #'(lambda (elem) (equal 'the elem)) xs)))
+
+(count-the '(the mayor of the village))
+
+(defun get-two-len-lists (xs)
+  (remove-if-not #'(lambda (elem) (= (length elem) 2)) xs))
+(get-two-len-lists '((list one one) (list two)))
+
+(defun my-intersection (list1 list2)
+  (remove-if-not (lambda (item) 
+                   (find item list2))
+                 list1))
+(my-intersection '(a b c d e f g) '(f g h i j k l m n))
+
+(defun my-union (list1 list2)
+  (append list1
+          (remove-if (lambda (item)
+                       (find item list1))
+                     list2)))
+(my-union '(a b c d e f g) '(f g h i j k l m n))
+#+end_src

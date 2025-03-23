@@ -33,4 +33,82 @@
 (defun ordered (x y)
   (if (< x y) (list x y) (list y x)))
 (ordered 3 2)
+
+(defun compare (x y)
+  (cond ((equal x y ) 'numbers-are-the-same)
+        ((< x y) 'first-is-smaller)
+        ((> x y) 'first-is-bigger)))
+
+(compare 3 5)
+
+(defun where-is (x)
+  (cond ((equal x 'paris) 'france)
+        ((equal x 'london) 'england)
+        ((equal x 'beijing) 'china)
+        (t 'unknown)))
+(where-is 'brussels)
+
+(defun emphasize (x)
+  (cond ((equal (first x) 'good) (cons 'great (rest x)))
+        ((equal (first x) 'bad) (cons 'awful (rest x)))
+        (t x)))
+
+(emphasize '(good mystery store))
+(emphasize '(alright mystery store))
+
+(defun compute (op x y)
+  (cond ((equal op 'sum-of) (+ x y))
+        ((equal op  'product-of) (* x y))
+        (t '(that does not compute))))
+(compute 'sum-of 1 3)
+
+(defun firstzero (x)
+  (cond ((equal (first x) 0) 'first)
+        ((equal (second x) 0) 'second)
+        ((equal (third x) 0) 'third)
+        (t 'no-zero)))
+(firstzero '(0 1 1))
+(firstzero '(1 0 1))
+(firstzero '(1 1 0))
+(firstzero '(1 1 1 0))
+
+(defun make-odd (x)
+  (cond ((not (oddp x)) (+ x 1))
+        (t x)))
+
+(defun constrain-cond (x max min)
+  (cond ((< x min) min)
+        ((> x max) max)
+        (t x)))
+
+(constrain-cond -199 50 -50)
+
+(defun constrain-if (x max min)
+  (if (< x min)
+      min
+      (if (> x max)
+          max
+          x)))
+
+(constrain-if -199 50 -50)
+
+(and 1 2 3 4 5)
+(or 1 2 3 4 5)
+
+(defun geq (x y)
+  (or (> x y) (equalp x y)))
+(geq 2 1)
+
+(and 'x 'y 'z 'w)
+
+(if (equalp 1 2) 'hi)
+(cond)
+
+
+(or (and (oddp 5) (evenp 7)) 'foo)
+
+(OR (AND (ODDP 5)
+         (AND (EVENP 7) T))  ; Wrap true-part in (AND expr T) to preserve its value
+     (AND (NOT (ODDP 5))     ; Only evaluate false-part if test is false
+          'FOO))
 #+end_src

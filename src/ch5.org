@@ -1,0 +1,28 @@
+#+TITLE: Chapter 5: Variables and side effects
+
+#+begin_src lisp
+(setf vowels '(a e i o u))
+
+(length vowels)
+
+(list (random 5.0) (random 5.0))
+
+(defun average (x y)
+  (let ((sum (+ x y)))
+    (list x y 'average 'is (/ sum 2.0))))
+(average 5 10)
+
+(defun good-style (p)
+  (let ((p2 (+ p 5)))
+    (list 'result 'is p2)))
+(good-style 20)
+
+;; let* creates the variables one by one imperitavely
+;; let creates them all at once
+(defun price-change (old new)
+  (let* ((diff (- new old))
+         (proportion (/ diff old))
+         (percentage (* proportion 100.0)))
+    (list 'widgets 'changed 'by percentage 'percent)))
+(price-change 1.25 1.35)
+#+end_src

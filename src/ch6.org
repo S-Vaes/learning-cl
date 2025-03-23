@@ -1,0 +1,304 @@
+#+TITLE: Chapter 6 List Data Structures
+
+#+begin_src lisp
+(cons 'w '(x y z))
+(cons '(a b c) 'd)
+
+(append '(friends romand) '(and countrymen))
+(append '(l m n o) '(p q r))
+
+;; Append is non-destructive
+(setf who '(only the good))
+(append who '(die young))
+
+(append '(w x y) 'z)
+
+(append '(a b c) '(d))
+
+(defun add-to-end (x e)
+  "Adds element E to the end of the list X."
+  (append x (list e)))
+(add-to-end '(a b c) 'd)
+#+end_src
+
+- =Cons= creates one new cons cell, it's often used to add an element to the front of a list.
+- =List= makes new lists by accepting an arbritrary number of inputs and building a chain of cons cells ending in nil. A car of each cell points to the corresponding input.
+- =Append= appends lists together by copying its first input and making the cdr of the last cell of the copy point to the second input. If the first input isn't a list it's considered an error.
+
+#+begin_src lisp
+(cons 'rice '(and beans))
+(list 'rice '(and beans))
+(append 'rice '(and beans))
+
+(cons '(here today) '(gone tomorrow))
+(list '(here today) '(gone tomorrow))
+(append '(here today) '(gone tomorrow))
+
+(cons '(eat at ) 'joes)
+(list '(eat at ) 'joes)
+(append '(eat at ) 'joes)
+
+#+end_src
+
+#+begin_src lisp
+;; Reverse is also non-destructive
+(setf vow '(to have and to hold))
+(reverse vow)
+vow
+(reverse '(one two three four five))
+
+(defun add-to-end (x y)
+  (reverse (cons y (reverse x))))
+(add-to-end '(a b c) 'd)
+(append '(a b c) '(d))
+
+;; nthcdr is the nth successive cdr
+;; nth is the nth successive car
+
+(nthcdr 0 '(a b c))
+(nthcdr 2 '(a b c))
+(nthcdr 3 '(a b c . d))
+;; End of the list is not a `nil` atom!
+;; (nthcdr 4 '(a b c . d))
+
+(nth 2 '(a b c))
+(nth 3 '(a b c))
+;; Error because the nth cdr is not a list!
+;; (nth 3 '(a b c . d))
+
+
+;; Last returns the last cons cell
+(last '(all is forgiven))
+(last '(a b c . d))
+
+;; Remove all elements from a list, also non-destructive
+(remove 'a '(b a n a n a))
+(remove '1 '(3 1 4 1 5 9))
+
+(defun last-element (x)
+  (car (last x)))
+(last-element '(a b c . d))
+(defun last-elem-nth (x)
+  (nth (- (length x) 1) x))
+(last-elem-nth '(a b c))
+
+(defun my-butlast (x)
+  (reverse (nthcdr 1 (reverse x))))
+(my-butlast '(a b c d e f))
+
+(defun palindromep (x)
+  (equal (reverse x) x))
+(palindromep '(a b c))
+(palindromep '(a b c d c b a))
+
+(defun make-palindrome (x)
+  (append x (reverse x)))
+(make-palindrome '(a b c))
+#+end_src
+
+* Lists as sets
+
+#+begin_src lisp
+(setf ducks '(huey dewey louis))
+
+(member 'huey ducks)
+
+(defun beforep (x y l)
+  (member y (member x l)))
+(beforep 'not 'whom '(ask not for whom the bell tolls))
+
+;; intersection
+
+(intersection '(fred john mary)
+              '(sue mary fred))
+(intersection '(fred john mary)
+              nil)
+
+;; union
+;; set-difference
+;; subsetp
+
+(defun set-equal (x y)
+  (and (subsetp x y) (subsetp y x)))
+(set-equal '(b c a) '(a b c))
+
+(defun proper-subsetp (x y)
+  (and (subsetp x y) (not (set-equal x y))))
+(proper-subsetp '(a c) '(c a b))
+(proper-subsetp '(a b c) '(c a b))
+
+#+end_src
+
+* Lists as tables
+#+begin_src lisp
+(setf words
+      '((one un)
+        (two deux)
+        (three trois)
+        (four quatre)
+        (five cinq)))
+
+(assoc 'three words)
+(assoc 'six words)
+
+(defun translate (x)
+  (second (assoc x words)))
+(translate 'one)
+
+(setf sounds
+      '((cow . moo)
+        (pig . oink)
+        (cat . meow)
+        (dog . woof)
+        (bird . tweet)))
+(rassoc 'woof sounds)
+(assoc 'dog sounds)
+
+(setf produces
+      '((apple . fruit)
+        (celery . veggie)
+        (banana . fruit)
+        (lettuce . veggie)))
+
+
+(setf things
+      '((object1 large green shiny cube)
+        (object2 small red dull metal cube)
+        (object3 red small dull plastic cube)
+        (object4 small dull blue metal cube)
+        (object5 small shiny red four-sided pyramid)
+        (object6 large shiny green sphere)))
+
+(defun description (x)
+  (rest (assoc x things)))
+(description 'object3)
+
+(defun differences (x y)
+  (set-exclusive-or (description x)
+                    (description y)))
+(differences 'object2 'object3)
+
+(setf quality-table
+      '((large . size)
+        (small . size)
+        (red . color)
+        (green . color)
+        (blue . color)
+        (shiny . luster)
+        (dull . luster)
+        (metal . material)
+        (plastic . material)
+        (cube . shape)
+        (sphere . shape)
+        (pyramid . shape)
+        (four-sided . shape)))
+
+(defun quality (x)
+  (cdr (assoc x quality-table)))
+(quality 'red)
+
+(defun quality-difference (x y)
+  (quality (first (differences x y))))
+(quality-difference 'object2 'object3)
+
+(sublis quality-table (differences 'object3 'object4))
+(defun contrast (x y)
+  (remove-duplicates (sublis quality-table (differences x y))))
+(contrast 'object3 'object4)
+
+(length quality-table)
+
+(setf books
+      '((war-and-peace leo-tolstol)
+        (stoner john-williams)
+        (crime-and-punishment dostoyevsky)
+        (the-idiot dostoyevsky)
+        (illiad homer)))
+
+(defun who-wrote (title)
+  (rest (assoc title books)))
+(who-wrote 'stoner)
+
+(setf books (reverse books))
+
+(setf states
+      '((pennsylvania pittsburgh johnstown)
+        (new-jersey neward princeton trenton)
+        (ohio columbus)))
+
+(setf states
+      '((sleeping eating)
+        (eating waiting-for-a-computer)
+        (waiting-for-a-computer programming)
+        (programming debugging)
+        (debugging sleeping)))
+
+(defun nerdus (state)
+  (rest (assoc state states)))
+(nerdus 'sleeping)
+
+(defun sleepless-nerd (state)
+  (let ((next-state (nerdus state)))
+    (cond ((equal next-state '(sleeping)) (nerdus (car next-state)))
+           (t next-state))))
+(sleepless-nerd 'debugging)
+
+(defun nerd-on-caffeine (state)
+  (nerdus (car (nerdus state))))
+(nerd-on-caffeine 'sleeping)
+
+(defun swap-first-last (x)
+  (append (last x) (reverse (cdr (reverse (cdr x)))) (first x)))
+(swap-first-last '(you cant buy love))
+
+(defun rotate-right (x)
+  (append (last x) (reverse (cdr (reverse x)))))
+(rotate-right '(a b c d e))
+
+(defun rotate-left (x)
+  (append (cdr x) (first x)))
+(rotate-left '(a b c d e))
+#+end_src
+
+* Trees
+
+#+begin_src lisp
+(subst 'fred 'bill
+       '(bill jones sentd me an itemized bill for the tires))
+
+(subst 'the 'a
+       '((a hatter) (a hare) and (a dormouse)))
+
+;; SUBLIS is like SUBST, except it can make many substitutions simultaneously. The first input to SUBLIS is a table whose entries are dotted pairs. The second input is the list in which the substitutions are to be made.
+
+(sublis '((roses . violets) (red . blue))
+        '(roses are red))
+
+(subst 'we 'i
+       '(if i learn lisp i will be pleased))
+
+;; eq compares addresses, equal the objects/lists themselves.
+;; eq is faster
+
+;; eql is a more general variant of eq
+;; for objects it compares addresses, but for numbers the contents
+;; eql is the standard comparison predicate in CL
+
+;; equalp is similar to equal, but more liberal
+;; It ignore case
+
+;; Keyword arguments: `:count` ...
+
+(symbolp :count)
+(equal :count 'count)
+(keywordp 'count)
+(keywordp :count)
+
+(setf cards '((3 clubs) (5 diamonds) (ace spades)))
+(member '(5 diamonds) cards)
+(second cards)
+(eql (second cards) '(5 diamonds))
+(equal (second cards) '(5 diamonds))
+
+(member '(5 diamonds) cards :test #'equal)
+#+end_src
