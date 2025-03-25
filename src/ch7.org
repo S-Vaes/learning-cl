@@ -150,4 +150,155 @@ fn
                        (find item list1))
                      list2)))
 (my-union '(a b c d e f g) '(f g h i j k l m n))
+
+(defun rank (card)
+  (first card))
+(defun suit (card)
+  (second card))
+
+(setf hand '((3 hearts)
+             (5 clubs)
+             (2 diamonds)
+             (4 diamonds)
+             (ace spades)))
+
+(defun count-suit (suit cards)
+  (length (remove-if-not #'(lambda (card)
+                             (equal suit (suit card)))
+                         cards)))
+(count-suit 'diamonds hand)
+
+(setf colors '((clubs black)
+               (diamonds red)
+               (hearts red)
+               (spades black)))
+(defun color-of (card)
+  (second (assoc (second card) colors)))
+(color-of '(2 clubs))
+
+(defun first-red (hand)
+  (find-if #'(lambda (card) (equal (color-of card) 'red)) hand))
+(first-red hand)
+(defun black-cards (hand)
+  (remove-if-not #'(lambda (card) (equal (color-of card) 'black)) hand))
+(black-cards hand)
+
+(defun what-ranks (insuit hand)
+  (mapcar #'first
+          (remove-if-not #'(lambda (card)
+                             (equal (suit card) insuit))
+                         hand)))
+(what-ranks 'diamonds hand)
+
+(setf all-ranks '(2 3 4 5 6 7 8 9 10 jack queen king ace))
+(defun higher-rank-p (card1 card2)
+  (equal card2 (first (member card2 (member card1 all-ranks)))))
+(higher-rank-p 'queen 'jack)
+
+(defun high-card (hand) 
+  (let ((highest-rank 
+          (find-if (lambda (rank) 
+                     (assoc rank hand))
+                   (reverse all-ranks))))
+    (assoc highest-rank hand)))
+
+(high-card hand)
+
+(reduce '+ '(1 2 3))
+(reduce 'append '((one un) (two deux) (three trois)))
+
+(defun total-len (lists)
+  (length (reduce 'append lists)))
+(total-len '((a b c) (d e f) (g h i)))
+
+(defun all-odd (list)
+  (every 'oddp list))
+(all-odd '(1 3 5 8 9))
+
+(defun none-odd (list)
+  (every 'evenp list))
+
+(setf database
+      '((b1 shape brick)
+        (b1 color green)
+        (b1 size small)
+        (b1 supported-by b2)
+        (b1 supported-by b3)
+        (b2 shape brick)
+        (b2 color red)
+        (b2 size small)
+        (b2 supports b1)
+        (b2 left-of b3)
+        (b3 color red)
+        (b3 size small)
+        (b3 supports b1)
+        (b3 right-of b2)
+        (b4 shape pyramid)
+        (b4 color blue)
+        (b4 size large)
+        (b4 supported-by b5)
+        (b5 shape cube)
+        (b5 color green)
+        (b5 size large)
+        (b5 supports b4)
+        (b6 shape brick)
+        (b6 color purple)
+        (b6 size large)))
+
+;; Match Element Function
+(defun match-element (pattern assertion)
+  "Check if two elements match, with '?' as a wildcard."
+  (or (eq pattern assertion)  ; Exact match
+      (eq pattern '?)               ; Wildcard match
+      ))
+
+;; Match Triple Function
+(defun match-triple (pattern assertion)
+  (and (= (length pattern) (length assertion))
+       (every 'match-element pattern assertion)))
+
+;; Fetch Function
+(defun fetch (pattern)
+  (remove-if-not (lambda (assertion) (match-triple pattern assertion)) database))
+
+(fetch '(b2 color ?))
+(fetch '(b4 shape ?))
+
+(defun get-color-pattern (block-name)
+  `(,block-name color ?))
+(get-color-pattern 'b4)
+
+(defun supporters (block-name)
+  (mapcar 'first (fetch `(? supports ,block-name))))
+(supporters 'b1)
+
+(mapcar (lambda (x y) (list x 'gets y))
+        '(fred wilma george diane)
+        '(job1 job2 job3 job4))
+
+(mapcar '+ '(1 2 3 4 5) '(60 70 80 90 100))
+
+;; #' is the function special function
+'cons
+#'cons
+#'(lambda (x) (+ x 2))
+
+(setf g #'(lambda (x) (* x 10)))
+(funcall g 12)
+
+(find-if 'oddp '(2 3 4 5 6))
+(find-if 'oddp '(2 3 4 5 6) :from-end t)
+
+(defun inalienable-rights (fn)
+  (funcall fn
+           '(life liberty and the pursuit of happiness)))
+(inalienable-rights #'length)
+(inalienable-rights #'reverse)
+
+(defun make-greater-than-predicate (n)
+  #'(lambda (x) (> x n)))
+(setf pred (make-greater-than-predicate 3))
+(funcall pred 2)
+(funcall pred 5)
+(find-if pred '(2 3 4 5 6 7 8))
 #+end_src
