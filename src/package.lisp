@@ -1,2 +1,2 @@
 (defpackage :learning
-            (:use :cl :iterate :alexandria))
+            (:use :cl :iterate :alexandria :lisp-critic))

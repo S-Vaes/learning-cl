@@ -18,7 +18,8 @@
          sbcl-alexandria
          sbcl-alive-lsp))
   (native-inputs
-   (list sbcl-rove))
+   (list sbcl-rove
+         sbcl-lisp-critic))
   (synopsis "Learning Common Lisp")
   (description "Learning Common Lisp")
   (home-page #f)

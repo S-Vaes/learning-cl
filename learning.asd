@@ -3,7 +3,8 @@
   :author "Sil Vaes"
   :license "MIT"
   :depends-on (#:iterate
-               #:alexandria)
+               #:alexandria
+               #:lisp-critic)
   :description "Learning Common Lisp"
   :serial t
   :components ((:module "src"

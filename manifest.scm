@@ -7,4 +7,5 @@
    "sbcl-named-readtables"
    "sbcl-papyrus"
    "sbcl-alive-lsp"
+   "sbcl-lisp-critic"
    ))

@@ -300,5 +300,5 @@ fn
 (setf pred (make-greater-than-predicate 3))
 (funcall pred 2)
 (funcall pred 5)
-(find-if pred '(2 3 4 5 6 7 8))
+(find-if pred '(2 3 4 5 6 7 8))  
 #+end_src

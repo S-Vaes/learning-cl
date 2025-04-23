@@ -1,0 +1,432 @@
+#+TITLE: Recursion
+
+#+begin_src lisp
+(defun anyoddp (xs)
+  (cond ((null xs) nil)
+        ((oddp (first xs)) t)
+        (t (anyoddp (rest xs)))))
+
+(trace anyoddp)
+
+(anyoddp '(4142 5788 6550 8914))
+
+(defun anyoddp-if (xs)
+  (if (null xs)
+      nil
+      (if (oddp (first xs))
+          t
+          (anyoddp-if (rest xs)))))
+(anyoddp-if '(4142 5788 6550 8912))
+
+(defun fact (n)
+  (cond ((zerop n) 1)
+        (t (* n (fact (- n 1))))))
+(fact 5)
+(fact 20.0)
+(fact 20)
+(fact 0)
+(fact 0.0)
+
+(defun count-slices (loaf)
+  (cond ((null loaf) 0)
+        (t (+ 1 (count-slices (rest loaf))))))
+(count-slices '(x x x x x x x x x))
+
+;; Rules of recursion
+;; Know when to stop
+;; Decide when to take one step
+;; Break the journey down into that step plus a smaller journey
+
+(defun laugh (n)
+  (cond ((= n 0) nil)
+        (t (cons 'ha (laugh (- n 1))))))
+(laugh 3)
+
+(null '(1 2 3))
+(null '())
+
+(defun add-up (xs)
+  (cond ((null xs) 0)
+         (t (+ (car xs) (add-up (cdr xs))))))
+(add-up '(1 2 3))
+
+(defun alloddp (xs)
+  (cond ((null xs) t)
+        (t (and (oddp (car xs)) (alloddp (cdr xs))))))
+(alloddp '(1 3 5 7))
+
+(defun rec-member (xs target)
+  (cond ((null xs) nil)
+        (t (or (equal target (car xs)) (rec-member (cdr xs) target)))))
+(rec-member '(1 5 3 2 1 5) 5)
+
+(defun fib (n)
+  (cond ((= n 0) 0)
+        ((= n 1) 1)
+        (t (+ (fib (- n 1)) (fib (- n 2))))))
+(fib 10)
+
+(defun any-7-p (x)
+  (cond ((null x) nil)
+        ((equal (first x) 7) t)
+        (t (any-7-p (rest x)))))
+(any-7-p '(1 2 3 6 5))
+
+(defun recurse (x)
+  (recurse x))
+
+;; Recursion template
+
+;; Double-test tail:
+(defun func (x)
+  (cond (end-test-1 end-value-1)
+        (end-test-2 end-value-2)
+        (t (func reduced-x))))
+
+(defun find-first-odd (xs)
+  (cond ((null xs) nil)
+        ((oddp (first xs)) (first xs))
+        (t (find-first-odd (rest xs)))))
+(find-first-odd '(12 10 23 1))
+
+;; Single-test tail:
+(defun func (x)
+  (cond (end-test end-value)
+        (t (func reduced-x))))
+
+(defun anyoddp (xs)
+  (cond ((oddp (first xs)) t)
+        (t (anyoddp (rest xs)))))
+(anyoddp '(12 10 20 2))
+
+;; Single test augmenting
+(defun func (x)
+  (cond (end-test end-value)
+        (t (aug-fun aug-val
+                    (func reduced-x)))))
+
+(defun add-nums (x)
+  (cond ((= x 0) 0)
+        (t (+ x (add-nums (- x 1))))))
+(add-nums 10)
+
+(defun all-equal-helper (xs comp)
+  (cond ((null xs) t)
+        ((not (equal (first xs) comp)) nil)
+        (t (all-equal-helper (rest xs) (first xs)))))
+
+(defun all-equal (xs)
+  (all-equal-helper xs (first xs)))
+(all-equal '(I I I I I))
+
+;; List consing
+(defun func (N)
+  (cond (end-test nil)
+        (t (cons new-element
+                 (func reduced-n)))))
+
+(defun count-down (n)
+  (cond ((= n 0) '(0))
+        (t (cons n (count-down (- n 1))))))
+(count-down 5)
+
+(defun square-list (xs)
+  (cond ((null xs) nil)
+        (t (let ((square (* (first xs) (first xs))))
+             (cons square (square-list (rest xs)))))))
+
+(square-list '(3 4 5 6))
+
+;; Simultaneous recursion on several variable
+(defun func (n x)
+  (cond (end-test end-value)
+        (t (func reduced-n reduced-x))))
+
+(defun my-nth (n x)
+  (cond ((null x) nil)
+        ((zerop n) (first x))
+        (t (my-nth (- n 1) (rest x)))))
+(my-nth 2 '(a b c d e))
+(my-nth 1000 '(a b c d e f g))
+
+(defun my-member (mem xs)
+  (cond ((null xs) nil)
+        ((equal mem (first xs)) xs)
+        (t (my-member mem (rest xs)))))
+(my-member 'e '(a b c d e f g))
+
+(defun my-assoc (key xs)
+  (cond ((null xs) nil)
+        ((let ((key-val-pair (first xs)))
+           (equal key  (first key-val-pair))
+           key-val-pair))
+        (t (my-assoc key (rest xs)))))
+(my-assoc 'key1 '((key0 . val1)
+                  (key1 . val2)
+                  (key2 . val3)))
+
+(defun compare-lengths (list1 list2)
+  (cond ((and (null list1) (null list2) 'same-length))
+        ((null list1) 'second-is-longer)
+        ((null list2) 'first-is-longer)
+        (t (compare-lengths (rest list1) (rest list2)))))
+(compare-lengths '(1 2 3 4 5 6) '(1 2 3 4 5 6 7))
+
+;; Conditional augmentation
+(defun func (x)
+  (cond (end-test end-value)
+        (aug-test (aug-fun aug-val
+                           (func reduced-x)))
+        (t (func reduced-x))))
+
+(defun sum-numeric-elements (xs)
+  (cond ((null xs) 0)
+        ((numberp (first xs))
+         (+ (first xs) (sum-numeric-elements (rest xs))))
+        (t (sum-numeric-elements (rest xs)))))
+(sum-numeric-elements '(3 bears 3 bowls and 1 girl))
+
+(defun my-remove (elem xs)
+  (cond ((null xs) nil)
+        ((not (equal elem (first xs)))
+         (cons (first xs)
+               (my-remove elem (rest xs))))
+        (t (my-remove elem (rest xs)))))
+(my-remove 1 '(1 2 1 3 1 4 1 5))
+
+(defun my-intersection (set1 set2)
+  (cond ((null set1) nil)
+        ((find (first set1) set2)
+         (cons (first set1)
+               (my-intersection (rest set1) set2)))
+        (t (my-intersection (rest set1) set2))))
+(my-intersection '(1 2 3 4 5 6 7 8) '(5 7 8 9 10 11 12 13))
+
+(defun my-set-difference (set1 set2)
+  "Recursive implementation of set-difference. Returns elements in set1 that are not in set2."
+  (cond
+    ;; Base case: If set1 is empty, return empty list
+    ((null set1) nil)
+
+    ;; If the first element of set1 is in set2, exclude it and recurse with rest of set1
+    ((member (first set1) set2)
+     (my-set-difference (rest set1) set2))
+
+    ;; If the first element of set1 is not in set2, include it in the result
+    ;; and recurse with the rest of set1
+    (t (cons (first set1)
+             (my-set-difference (rest set1) set2)))))
+(my-set-difference '(1 2 3 4 5 6 7 8) '(5 7 8 9 10 11 12 13))
+
+;; Multiple recursion
+(defun func (n)
+  (cond (end-test-1 end-value-1)
+        (end-test-2 end-value-2)
+        (t (combiner (func first-reduced-n)
+                     (func second-reduced-n)))))
+
+;; CAR/CDR recursion
+(defun func (x)
+  (cond (end-test-1 end-value-1)
+        (end-test-2 end-value-2)
+        (t (combiner (func (car x))
+                     (func (cdr x))))))
+
+(defun atoms-to-q (x)
+  (cond ((null x) nil)
+        ((atom x) 'q)
+        (t (cons (atoms-to-q (car x))
+                 (atoms-to-q (cdr x))))))
+(atoms-to-q '(hark (harold the angels) sings))
+
+(defun count-atoms (xs)
+  (cond ((null xs) 1)
+        ((atom xs) 1)
+        (t (+ (count-atoms (first xs))
+              (count-atoms (rest xs))))))
+(count-atoms '(poo))
+(count-atoms '(a (b) c))
+
+(defun count-cons (xs)
+  (cond ((not (consp xs)) 0)
+        (t (+ 1
+              (count-cons (first xs))
+              (count-cons (rest xs))))))
+(count-cons '(poo))
+(count-cons '(foo bar))
+(count-cons '((poo)))
+
+(defun sum-tree (tree)
+  "Returns the sum of all numbers in TREE, ignoring non-numbers."
+  (cond ((numberp tree) tree)          ; If it's a number, return it
+        ((not (consp tree)) 0)         ; If it's a non-number atom, return 0
+        (t (+ (sum-tree (car tree))    ; Sum numbers in the car
+              (sum-tree (cdr tree)))))) ; Sum numbers in the cdr
+(SUM-TREE '((3 BEARS) (3 BOWLS) (1 GIRL 1)))
+
+(defun my-subst (new old tree)
+       (cond
+         ;; Base case: if tree is equal to old, return new
+         ((equal tree old) new)
+
+         ;; If tree is an atom and not equal to old, return tree unchanged
+         ((atom tree) tree)
+
+         ;; For lists, recursively process car and cdr
+         (t (cons (my-subst new old (car tree))
+                  (my-subst new old (cdr tree))))))
+(my-subst 'a 'b '(b c d))
+(my-subst 'z 'x '(a x (b x c) d))
+
+(defun flatten (lst)
+  (cond
+    ;; If list is empty, return nil
+    ((null lst) nil)
+
+    ;; If first element is a list, flatten it and append with flattened rest
+    ((listp (car lst))
+     (append (flatten (car lst)) (flatten (cdr lst))))
+
+    ;; If first element is an atom, cons it with flattened rest
+    (t (cons (car lst) (flatten (cdr lst))))))
+(flatten '((a b (r)) (a c (a d ((a (b)) (r) a)))))
+
+(defun tree-depth (tree)
+  (cond ((atom tree) 0)
+        (t (+ 1 (max (tree-depth (car tree))
+                     (tree-depth (cdr tree)))))))
+(tree-depth '(a . b))
+(tree-depth '((a b c d)))
+
+(defun paren-depth-helper (lst depth)
+  (cond
+    ;; If list is empty, return current depth
+    ((null lst) depth)
+
+    ;; If first element is a list, calculate its depth and compare with rest
+    ((listp (car lst))
+     (max (paren-depth-helper (car lst) (1+ depth))  ; CAR case: go deeper, increment depth
+          (paren-depth-helper (cdr lst) depth)))     ; CDR case: stay at same depth
+
+    ;; If first element is an atom, only check the rest of the list
+    (t (paren-depth-helper (cdr lst) depth))))
+
+(defun paren-depth (lst)
+  "Returns the maximum depth of nested parentheses in a list.
+   The top level counts as depth 1."
+  (if (atom lst)
+      0  ; If it's an atom (not a list), depth is 0
+      (paren-depth-helper lst 1)))
+(paren-depth '(a b c))
+(paren-depth '(a b ((c) d) e))
+
+(defun count-up (n)
+  (cond
+    ((<= n 0) nil)
+    ((= n 1) '(1))
+    (t (append (count-up (1- n)) (list n)))))
+(count-up 5)
+
+(defun make-loaf (n)
+  (if (equal n 0)
+      nil
+      (cons 'x (make-loaf (1- n)))))
+(make-loaf 5)
+
+(defun bury (item level)
+  (cond ((equal level 0) item)
+        (t (bury (list item) (1- level)))))
+(bury 'freddy 5)
+
+(defun pairs (list1 list2)
+  (cond ((or (null list1) (null list2)) nil)
+        ((atom list1) (list list1 (cdr list2)))
+        ((atom list2) (list (cdr list1) list2))
+        (t (cons (list (car list1) (car list2)) (pairs (cdr list1) (cdr list2))))))
+(pairs '(a b c) '(d e f))
+
+(defun sublists (xs)
+  (cond ((null xs) nil)
+        (t (cons xs (sublists (cdr xs))))))
+(sublists '(fee fie foe))
+
+(defun my-reverse-helper (xs out)
+  (cond ((null xs) out)
+        (t (my-reverse-helper (cdr xs) (append out ((car xs)))))))
+(defun my-reverse (xs)
+  (my-reverse-helper xs '()))
+(my-reverse '(a b c d e f g))
+
+(defun my-union (list1 list2)
+  (cond ((null list1) list2)
+        ((member (car list1) list2)
+         (my-union (cdr list1) list2))
+        (t (cons (car list1) (my-union (cdr list1) list2)))))
+(my-union '(a b c d e f g) '(e f g h i j k))
+
+(defun largest-even-helper (xs current)
+  (cond ((null xs) current)
+        ((and (evenp (car xs)) (> (car xs) current)) (largest-even-helper xs (car xs)))
+        (t (largest-even-helper (cdr xs) current))))
+(defun largest-even (xs)
+  (largest-even-helper xs 0))
+(largest-even '(5 2 4 3))
+
+(defun huge-helper (current-num pow)
+  (cond ((equal pow 1) current-num)
+        (t (* current-num (huge-helper current-num (1- pow))))))
+(defun huge (n)
+  (huge-helper n n))
+(huge 3)
+
+(defun every-other (lst)
+  (cond
+    ((null lst) nil)                         ; If the list is empty, return nil
+    ((null (cdr lst)) (list (car lst)))      ; If only one element, return it in a list
+    (t (cons (car lst)                       ; Otherwise, keep the first element
+             (every-other (cddr lst))))))    ; And recursively process list starting from third element
+(every-other '(a b c d e f g))
+
+
+(defun left-half-helper (lst n)
+  (cond
+    ((zerop n) nil)                        ; If we've taken enough elements, return nil
+    ((null lst) nil)                       ; If the list is empty, return nil
+    (t (cons (car lst)                     ; Otherwise, keep the first element
+             (left-half-helper (cdr lst) (1- n)))))) ; And recursively process the rest with counter decremented
+
+(defun left-half (lst)
+  (left-half-helper lst (ceiling (length lst) 2)))
+(left-half '(a b c d e f g))
+
+(defun merge-lists (list1 list2)
+  (cond
+    ((null list1) list2)                   ; If first list is empty, return second list
+    ((null list2) list1)                   ; If second list is empty, return first list
+    ((<= (car list1) (car list2))          ; If first element of list1 is smaller or equal
+     (cons (car list1)                     ; Include it in the result
+           (merge-lists (cdr list1) list2))) ; And recursively merge rest of list1 with list2
+    (t                                     ; Otherwise (first element of list2 is smaller)
+     (cons (car list2)                     ; Include it in the result
+           (merge-lists list1 (cdr list2)))))) ; And recursively merge list1 with rest of list2
+(merge-lists '(1 2 6 8 10 12) '(2 3 5 9 13))
+
+(defun arith-eval (expr)
+  (cond
+    ((numberp expr) expr)                     ; If expression is a number, return it
+    ((atom expr) (error "Invalid expression")) ; If it's a non-number atom, error
+    ((= (length expr) 1) (arith-eval (first expr))) ; Handle single-element lists
+    ((= (length expr) 3)                      ; Handle standard (op arg1 arg2) format
+     (let ((op (first expr))
+           (arg1 (arith-eval (second expr)))
+           (arg2 (arith-eval (third expr))))
+       (case op
+         (+ (+ arg1 arg2))
+         (- (- arg1 arg2))
+         (* (* arg1 arg2))
+         (/ (/ arg1 arg2))
+         (otherwise (error "Unknown operator: ~A" op)))))
+    (t (error "Invalid expression format"))))
+
+(arith-eval '(+ 2 (* 4 3)))
+#+end_src
